@@ -1,4 +1,27 @@
 apply plugin: 'com.android.library'
+ext {
+    bintrayRepo = 'maven'
+    bintrayName = 'RecyclerViewWithLoadMoreAndServerRequest'
+
+    publishedGroupId = 'com.hereshem.lib'
+    libraryName = 'RecyclerViewWithLoadMore'
+    artifact = 'RecyclerViewWithLoadMore'
+
+    libraryDescription = 'A wrapper for RecyclerView and Server request for easy interaction'
+
+    siteUrl = 'https://github.com/hereshem/RecyclerViewWithLoadMoreAndServerRequest'
+    gitUrl = 'https://github.com/hereshem/RecyclerViewWithLoadMoreAndServerRequest.git'
+
+    libraryVersion = '1.0'
+
+    developerId = 'hereshem'
+    developerName = 'Hem Shrestha'
+    developerEmail = 'hereshem@gmail.com'
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
+}
 
 android {
     compileSdkVersion 27
@@ -19,3 +42,6 @@ android {
 dependencies {
     implementation 'com.android.support:recyclerview-v7:27.1.1'
 }
+
+apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
+apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'
