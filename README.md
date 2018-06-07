@@ -5,7 +5,8 @@ You can add this library for making RecyclerView more Simpler using the followin
 ```
 implementation 'com.hereshem.lib:RecyclerViewWithLoadMore:1.0.2'
 ```
-##Steps
+## Steps
+
 **Create a Simple Class**
 
 ```
@@ -68,7 +69,7 @@ recycler.setAdapter(adapter);
 
 ----
 
-##Bonus
+## Bonus
 
 Online Data request to server made more simpler using the following code.
 
