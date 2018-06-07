@@ -3,7 +3,7 @@
 You can add this library for making RecyclerView more Simpler using the following gradle file in Android Studio.
 
 ```
-implementation 'com.hereshem.lib:RecyclerViewWithLoadMore:1.0.2'
+implementation 'com.hereshem.lib:awesomelib:1.0.0'
 ```
 ## Steps
 
