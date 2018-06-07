@@ -27,7 +27,7 @@
         <TextView
             android:id="@+id/date"
             android:text="9843096958"
-            android:textColor="@color/h_blue_800"
+            android:textColor="@color/color_blue_800"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
         <TextView
