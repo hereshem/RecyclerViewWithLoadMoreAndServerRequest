@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDbSave(String table, String response) {
                 if(table.equals("0")){
-                    new Preferences(getApplicationContext()).setPreferences("data_downloaded+", response);
+                    new Preferences(getApplicationContext()).setPreferences("data_downloaded", response);
                 }
             }
         }.setUrl("http://dl.mantraideas.com/apis/hievents.json").setMethod("GET").setTable(start+"").execute();
