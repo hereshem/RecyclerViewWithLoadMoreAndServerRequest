@@ -81,8 +81,8 @@ public abstract class MyDataQuery {
                 try {
                     URL u = new URL(url);
                     HttpURLConnection conn = (HttpURLConnection)u.openConnection();
+                    conn.setRequestMethod(method);
                     if(method.equalsIgnoreCase("post")) {
-                        conn.setRequestMethod("POST");
                         conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
                     }
                     conn.setDoOutput(true);
