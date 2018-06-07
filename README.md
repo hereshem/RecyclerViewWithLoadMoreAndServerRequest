@@ -65,6 +65,26 @@ MyRecyclerView recycler = findViewById(R.id.recycler);
 recycler.setAdapter(adapter);
 ```
 
+**Add ClickListener and LoadMore**
+
+```
+recycler.setOnItemClickListener(new MyRecyclerView.OnItemClickListener() {
+    @Override
+    public void onItemClick(int position) {
+        Toast.makeText(MainActivity.this, "Recycler Item Clicked " + position, Toast.LENGTH_SHORT).show();
+    }
+});
+
+recycler.setOnLoadMoreListener(new MyRecyclerView.OnLoadMoreListener() {
+    @Override
+    public void onLoadMore() {
+        start += 20;
+        loadData();
+    }
+});
+loadData();
+```
+
 **That's it**. 
 
 ----
