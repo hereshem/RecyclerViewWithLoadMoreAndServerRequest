@@ -6,7 +6,7 @@ buildscript {
         google()
         jcenter()
         maven {
-            url  "https://dl.bintray.com/hereshem/maven"
+            url  "https://dl.bintray.com/hereshem/awesomelib"
         }
     }
     dependencies {

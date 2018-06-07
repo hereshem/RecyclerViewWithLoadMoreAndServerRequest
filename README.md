@@ -1,9 +1,20 @@
-# RecyclerView with Loadmore and ServerRequests
+# AwesomeLib
+*An awesome library for the Android to make simpler with RecyclerView, LoadMore Features, ServerRequests, and many more.*
 
-You can add this library for making RecyclerView more Simpler using the following gradle file in Android Studio.
+You can add this library for making RecyclerView more Simpler using the following line in app level ```build.gradle``` file in Android Studio.
 
 ```
 implementation 'com.hereshem.lib:awesomelib:1.0.0'
+```
+And in the project level ```build.gradle``` add the following line
+
+```
+repositories {
+    ...
+    maven {
+        url  "https://dl.bintray.com/hereshem/awesomelib"
+    }
+}
 ```
 ## Steps
 
@@ -134,7 +145,7 @@ new MyDataQuery(this, maps) {
     @Override
     public void onDbSave(String table, String response) {
         if(table.equals("0")){
-            new Preferences(getApplicationContext()).setPreferences("data_downloaded+", response);
+            new Preferences(getApplicationContext()).setPreferences("data_downloaded", response);
         }
     }
     ...
