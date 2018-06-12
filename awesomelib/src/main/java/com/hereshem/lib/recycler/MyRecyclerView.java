@@ -4,11 +4,8 @@ import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
-import android.view.View;
 
-import com.hereshem.lib.server.ServerRequest;
+import com.hereshem.lib.server.MyDataQuery;
 
 
 /**
@@ -25,6 +22,7 @@ public class MyRecyclerView extends RecyclerView {
     public interface OnLoadMoreListener{
         void onLoadMore();
     }
+
     public MyRecyclerView(Context context) {
         super(context);
     }
@@ -53,7 +51,7 @@ public class MyRecyclerView extends RecyclerView {
                 int lastVisibleItem, totalItemCount;
                 totalItemCount = recyclerView.getLayoutManager().getItemCount();
                 lastVisibleItem = ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition();
-                if (ServerRequest.isNetworkConnected(getContext()) && dataLoaded && getAdapter().getItemCount()>0 && (totalItemCount <= (lastVisibleItem + visibleThreshold))) {
+                if (MyDataQuery.isNetworkConnected(getContext()) && dataLoaded && getAdapter().getItemCount()>0 && (totalItemCount <= (lastVisibleItem + visibleThreshold))) {
                     dataLoaded = false;
                     new android.os.Handler().post(new Runnable() {
                         @Override
@@ -67,32 +65,9 @@ public class MyRecyclerView extends RecyclerView {
     }
 
     public void setOnItemClickListener(final OnItemClickListener lis){
-        final GestureDetector gestureDetector = new GestureDetector(new GestureDetector.SimpleOnGestureListener(){
-            @Override
-            public boolean onSingleTapUp(MotionEvent e) {
-                return true;
-            }
-        });
-        this.addOnItemTouchListener(new OnItemTouchListener() {
-            @Override
-            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-                View childView = rv.findChildViewUnder(e.getX(), e.getY());
-                if(childView != null && lis != null && gestureDetector.onTouchEvent(e)){
-                    lis.onItemClick(rv.getChildLayoutPosition(childView));
-                }
-                return false;
-            }
-
-            @Override
-            public void onTouchEvent(RecyclerView rv, MotionEvent e) {
-
-            }
-
-            @Override
-            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-
-            }
-        });
+        if(getAdapter() instanceof RecyclerViewAdapter){
+            ((RecyclerViewAdapter)getAdapter()).setOnItemClickListener(lis);
+        }
     }
 
     public void hideLoadMore(){

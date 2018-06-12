@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,18 +19,22 @@ import java.util.Map;
  * Created by hereshem on 9/2/15.
  */
 public abstract class MyDataQuery {
-    Context context;
-    HashMap<String, String> params;
-    String method = "POST";
-    String url = "https://hereshem.github.io";
-    String table = "tables";
 
+    public enum Method {GET, POST, PUT, DELETE}
+
+    Context context;
+    Method method = Method.POST;
+    HashMap<String, String> params, headers;
+    String url = "https://hereshem.github.io";
+    String identifier = "tables";
+    boolean debug = true;
     int code = 0;
 
-    public abstract void onSuccess(String table, String result);
-    public void onError(String table, int code, String message){}
-    public String onDbQuery(String table, HashMap<String, String> params){return "[]";}
-    public void onDbSave(String table, String response){}
+    public abstract void onSuccess(String identifier, String result);
+    public void onError(String identifier, int code, String message){}
+    public void onSoftError(String identifier, String message){}
+    public String onDbQuery(String identifier, HashMap<String, String> params){return "[]";}
+    public void onDbSave(String identifier, String response){}
 
 
     public MyDataQuery (Context context){
@@ -41,13 +46,23 @@ public abstract class MyDataQuery {
         this.params = params;
     }
 
-    public MyDataQuery setMethod(String method){
+    public MyDataQuery setParameters(HashMap<String, String> params){
+        this.params = params;
+        return this;
+    }
+
+    public MyDataQuery setHeaders(HashMap<String, String> headers){
+        this.headers = headers;
+        return this;
+    }
+
+    public MyDataQuery setMethod(Method method){
         this.method = method;
         return this;
     }
 
-    public MyDataQuery setTable(String table){
-        this.table = table;
+    public MyDataQuery setIdentifier(String identifier){
+        this.identifier = identifier;
         return this;
     }
 
@@ -56,22 +71,26 @@ public abstract class MyDataQuery {
         return this;
     }
 
-    public static MyDataQuery getInstance(Context context, HashMap<String, String> params){
-        return new MyDataQuery(context, params){
-            @Override
-            public void onSuccess(String table, String result) {
-
-            }
-        };
+    public MyDataQuery setDebug(boolean debug){
+        this.debug = debug;
+        return this;
     }
 
-    public void execute(){
-        String res = onDbQuery(table, params);
-        if(res != null && res.length() > 2)
-            onSuccess(table, res);
+    public MyDataQuery execute(){
+        String res = onDbQuery(identifier, params);
+        if(res != null && res.length() > 2) {
+            log("From query :: " + res);
+            onSuccess(identifier, res);
+        }
         if(!isNetworkConnected(context)){
-            onError(table, 450, "No connection");
-            return;
+            if(res != null && res.length() > 2) {
+                log("Soft error :: no connection");
+                onSoftError(identifier, "No internet connection");
+            }else {
+                log("Error :: no connection");
+                onError(identifier, 450, "No internet connection");
+            }
+            return this;
         }
         new AsyncTask<Void, Void, String>(){
             @Override
@@ -81,10 +100,12 @@ public abstract class MyDataQuery {
                 try {
                     URL u = new URL(url);
                     HttpURLConnection conn = (HttpURLConnection)u.openConnection();
-                    conn.setRequestMethod(method);
-                    if(method.equalsIgnoreCase("post")) {
+                    conn.setRequestMethod(method.name());
+                    if(method.equals(Method.POST)) {
                         conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
                     }
+                    log("Debug :: Method = " + method.name() +" Url = " + url);
+                    addHeaders(conn);
                     conn.setDoOutput(true);
                     conn.setDoInput(true);
                     OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream());
@@ -115,23 +136,38 @@ public abstract class MyDataQuery {
             @Override
             protected void onPostExecute(String result) {
                 super.onPostExecute(result);
-                Log.d("MyDataQuery", "Url = " + url + " Params = " + getUrlEncodeData(params) + " Response = " + result);
                 if(code == 200){
-                    onDbSave(table, result);
+                    onDbSave(identifier, result);
                 }
-                sendResponse(table, result);
+                sendResponse(identifier, result);
             }
         }.execute();
+        return this;
     }
 
-    private void sendResponse(String table, String result) {
-            if(code == 200) {
-                onSuccess(table, result);
-            }
-            else{
-                onError(table, code, result);
-            }
+    private void log(String text){
+        if(debug)
+            Log.d("MyDataQuery", text);
+    }
 
+    private void addHeaders(HttpURLConnection conn) {
+        if(headers != null && !headers.isEmpty()){
+            for (String key : headers.keySet()) {
+                conn.setRequestProperty(key, headers.get(key));
+            }
+            log("Headers = " + headers.toString());
+        }
+    }
+
+    private void sendResponse(String identifier, String result) {
+        if(code == 200) {
+            log("Success :: " + result);
+            onSuccess(identifier, result);
+        }
+        else{
+            log("Error :: Code = " + code + " Result = " + result);
+            onError(identifier, code, result);
+        }
     }
 
     private String getUrlEncodeData(HashMap<String, String> params) {
@@ -152,13 +188,20 @@ public abstract class MyDataQuery {
             }
             catch(Exception e){e.printStackTrace();}
         }
+        log("Params :: "+ result.toString());
         return result.toString();
     }
 
-    public static boolean isNetworkConnected(Context ctx) {
-        ConnectivityManager cm = (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
+    public static boolean isNetworkConnected(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo ni = cm.getActiveNetworkInfo();
         return ni!=null;
+    }
+
+    public static HashMap<String, String> getRequestParameters(String action) {
+        HashMap<String, String> params = new HashMap();
+        params.put("action", action);
+        return params;
     }
 
     public static HashMap<String, String> getRequestParameters(String action, int skip) {
@@ -167,5 +210,22 @@ public abstract class MyDataQuery {
         params.put("start", skip + "");
         params.put("limit", "20");
         return params;
+    }
+
+    public static String getSha1Hex(String string){
+        try{
+            MessageDigest messageDigest = MessageDigest.getInstance("SHA-1");
+            messageDigest.update(string.getBytes());
+            byte[] bytes = messageDigest.digest();
+            StringBuilder buffer = new StringBuilder();
+            for (byte b : bytes){
+                buffer.append(Integer.toString((b & 0xff) + 0x100, 16).substring(1));
+            }
+            return buffer.toString();
+        }
+        catch (Exception ignored){
+            ignored.printStackTrace();
+        }
+        return string;
     }
 }

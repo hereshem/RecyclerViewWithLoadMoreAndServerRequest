@@ -14,7 +14,6 @@ import com.hereshem.lib.utils.Preferences;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,10 +45,10 @@ public class MainActivity extends AppCompatActivity {
             return new ArrayList<>();
         }
     }
-    public static class VH extends RecyclerView.ViewHolder {
-        TextView date, title, summary;
 
-        public VH(View v) {
+    public static class VHolder extends RecyclerView.ViewHolder {
+        TextView date, title, summary;
+        public VHolder(View v) {
             super(v);
             date = v.findViewById(R.id.date);
             title = v.findViewById(R.id.title);
@@ -61,14 +60,15 @@ public class MainActivity extends AppCompatActivity {
             summary.setText(c.summary);
         }
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        RecyclerViewAdapter adapter = new RecyclerViewAdapter<Events, VH>(this, items, VH.class, R.layout.row_contact) {
+        RecyclerViewAdapter adapter = new RecyclerViewAdapter<Events, VHolder>(this, items, VHolder.class, R.layout.row_contact) {
             @Override
-            public void onBinded(VH holder, int position) {
+            public void onBinded(VHolder holder, int position) {
                 holder.bindView(items.get(position));
             }
         };
@@ -81,16 +81,13 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "Recycler Item Clicked " + position, Toast.LENGTH_SHORT).show();
             }
         });
-
         recycler.setOnLoadMoreListener(new MyRecyclerView.OnLoadMoreListener() {
             @Override
             public void onLoadMore() {
-                start += 10;
                 loadData();
             }
         });
         loadData();
-
     }
 
     private void loadData() {
@@ -127,6 +124,6 @@ public class MainActivity extends AppCompatActivity {
                     new Preferences(getApplicationContext()).setPreferences("data_downloaded", response);
                 }
             }
-        }.setUrl("http://dl.mantraideas.com/apis/hievents.json").setMethod("GET").setTable(start+"").execute();
+        }.setUrl("http://dl.mantraideas.com/apis/events.json").setMethod(MyDataQuery.Method.GET).setIdentifier(start+"").execute();
     }
 }

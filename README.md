@@ -4,7 +4,7 @@
 You can add this library for making RecyclerView more Simpler using the following line in app level ```build.gradle``` file in Android Studio.
 
 ```
-implementation 'com.hereshem.lib:awesomelib:1.0.0'
+implementation 'com.hereshem.lib:awesomelib:1.0.1'
 ```
 And in the project level ```build.gradle``` add the following line
 
@@ -47,9 +47,9 @@ public static class Events {
 **Create a View Holder**
 
 ```
-public static class VH extends RecyclerView.ViewHolder {
+public static class VHolder extends RecyclerView.ViewHolder {
     TextView date, title, summary;
-    public VH(View v) {
+    public VHolder(View v) {
         super(v);
         date = v.findViewById(R.id.date);
         title = v.findViewById(R.id.title);
@@ -66,9 +66,9 @@ public static class VH extends RecyclerView.ViewHolder {
 **Initialize Adapter**
 
 ```
-RecyclerViewAdapter adapter = new RecyclerViewAdapter<Events, VH>(this, items, VH.class, R.layout.row_contact) {
+RecyclerViewAdapter adapter = new RecyclerViewAdapter<Events, VHolder>(this, items, VHolder.class, R.layout.row_contact) {
     @Override
-    public void onBinded(VH holder, int position) {
+    public void onBinded(VHolder holder, int position) {
         holder.bindView(items.get(position));
     }
 };
@@ -89,7 +89,6 @@ recycler.setOnItemClickListener(new MyRecyclerView.OnItemClickListener() {
 recycler.setOnLoadMoreListener(new MyRecyclerView.OnLoadMoreListener() {
     @Override
     public void onLoadMore() {
-        start += 20;
         loadData();
     }
 });
@@ -107,7 +106,7 @@ Online Data request to server made more simpler using the following code.
 ```
 private void loadData() {
     HashMap<String, String> maps = new HashMap<>();
-    maps.put("action", "get_day");
+    maps.put("action", "get_event");
     maps.put("start", start+"");
     new MyDataQuery(this, maps) {
         @Override
@@ -135,16 +134,16 @@ new MyDataQuery(this, maps) {
 	...
 	...
     @Override
-    public String onDbQuery(String table, HashMap<String, String> params) {
-        if(table.equals("0")){
+    public String onDbQuery(String identifier, HashMap<String, String> params) {
+        if(identifier.equals("0")){
             return new Preferences(getApplicationContext()).getPreferences("data_downloaded");
         }
-        return super.onDbQuery(table, params);
+        return super.onDbQuery(identifier, params);
     }
 
     @Override
-    public void onDbSave(String table, String response) {
-        if(table.equals("0")){
+    public void onDbSave(String identifier, String response) {
+        if(identifier.equals("0")){
             new Preferences(getApplicationContext()).setPreferences("data_downloaded", response);
         }
     }

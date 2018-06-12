@@ -19,6 +19,7 @@ public abstract class RecyclerViewAdapter<LI, VH> extends RecyclerView.Adapter<R
     int layout;
     boolean loadMore = false;
     Class<VH> holderClass;
+    MyRecyclerView.OnItemClickListener lis;
 
     public RecyclerViewAdapter(Activity activity, List<LI> items, Class<VH> holderClass, int layout){
         this.activity = activity;
@@ -47,7 +48,8 @@ public abstract class RecyclerViewAdapter<LI, VH> extends RecyclerView.Adapter<R
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onItemViewClicked(position);
+                    if(lis != null)
+                        lis.onItemClick(position);
                 }
             });
         }
@@ -81,7 +83,8 @@ public abstract class RecyclerViewAdapter<LI, VH> extends RecyclerView.Adapter<R
         loadMore = false;
         notifyDataSetChanged();
     }
-    public void onItemViewClicked(int pos){
 
+    public void setOnItemClickListener(MyRecyclerView.OnItemClickListener lis){
+        this.lis = lis;
     }
 }

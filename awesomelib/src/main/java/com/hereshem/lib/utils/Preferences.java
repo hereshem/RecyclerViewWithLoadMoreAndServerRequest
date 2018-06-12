@@ -6,11 +6,9 @@ import android.preference.PreferenceManager;
 
 public class Preferences {
 
-    Context ctx;
-	SharedPreferences preferences;
+    SharedPreferences preferences;
 
 	public Preferences(Context ctx){
-		this.ctx = ctx;
 		preferences = PreferenceManager.getDefaultSharedPreferences(ctx);
 	}
 	
