@@ -124,6 +124,10 @@ public class MainActivity extends AppCompatActivity {
                     new Preferences(getApplicationContext()).setPreferences("data_downloaded", response);
                 }
             }
-        }.setUrl("http://dl.mantraideas.com/apis/events.json").setMethod(MyDataQuery.Method.GET).setIdentifier(start+"").execute();
+        }
+        .setUrl("http://dl.mantraideas.com/apis/events.json")
+        .setMethod(MyDataQuery.Method.GET)
+        .setIdentifier(start+"")
+        .execute();
     }
 }

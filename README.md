@@ -123,11 +123,15 @@ private void loadData() {
                 recycler.hideLoadMore();
             }
         }
-    }.setUrl("http://dl.mantraideas.com/apis/events.json").setMethod(Method.GET).setIdentifier(start+"").execute();
+    }
+    .setUrl("http://dl.mantraideas.com/apis/events.json")
+    .setMethod(Method.GET)
+    .setIdentifier(start+"")
+    .execute();
 }
 ```
 
-**Further more** - Offline support can also be provided using following code.
+**Further more** - Offline support can also be provided.
 
 ```
 new MyDataQuery(this, maps) {
@@ -150,4 +154,11 @@ new MyDataQuery(this, maps) {
     ...
     ...
 }...
+```
+
+In case of using **Proguard**, use these lines
+
+```
+-keep class com.hereshem.lib.** {*;}
+-dontwarn com.hereshem.lib.**
 ```
