@@ -110,9 +110,9 @@ private void loadData() {
     maps.put("start", start+"");
     new MyDataQuery(this, maps) {
         @Override
-        public void onSuccess(String table_name, String result) {
+        public void onSuccess(String identifier, String result) {
             List<Events> data = Events.parseJSON(result);
-            if (table_name.equals("0")) {
+            if (identifier.equals("0")) {
                 items.clear();
             }
             if (data.size() > 0) {
@@ -123,7 +123,7 @@ private void loadData() {
                 recycler.hideLoadMore();
             }
         }
-    }.setUrl("http://dl.mantraideas.com/apis/hievents.json").setMethod("GET").setTable(start+"").execute();
+    }.setUrl("http://dl.mantraideas.com/apis/events.json").setMethod(Method.GET).setIdentifier(start+"").execute();
 }
 ```
 
