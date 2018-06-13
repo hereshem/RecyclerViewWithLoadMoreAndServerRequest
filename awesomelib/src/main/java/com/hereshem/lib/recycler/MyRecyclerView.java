@@ -44,8 +44,8 @@ public class MyRecyclerView extends RecyclerView {
         if(getAdapter() instanceof RecyclerViewAdapter){
             ((RecyclerViewAdapter)getAdapter()).enableLoadMore();
         }
-        else if(getAdapter() instanceof MultiLayoutRecyclerViewAdapter){
-            ((MultiLayoutRecyclerViewAdapter)getAdapter()).enableLoadMore();
+        else if(getAdapter() instanceof MultiLayoutAdapter){
+            ((MultiLayoutAdapter)getAdapter()).enableLoadMore();
         }
         this.addOnScrollListener(new OnScrollListener() {
             @Override
@@ -71,8 +71,8 @@ public class MyRecyclerView extends RecyclerView {
         if(getAdapter() instanceof RecyclerViewAdapter){
             ((RecyclerViewAdapter)getAdapter()).setOnItemClickListener(lis);
         }
-        else if(getAdapter() instanceof MultiLayoutRecyclerViewAdapter){
-            ((MultiLayoutRecyclerViewAdapter)getAdapter()).setOnItemClickListener(lis);
+        else if(getAdapter() instanceof MultiLayoutAdapter){
+            ((MultiLayoutAdapter)getAdapter()).setOnItemClickListener(lis);
         }
     }
 
@@ -80,8 +80,8 @@ public class MyRecyclerView extends RecyclerView {
         if(getAdapter() instanceof RecyclerViewAdapter){
             ((RecyclerViewAdapter)getAdapter()).hideLoadMore();
         }
-        else if(getAdapter() instanceof MultiLayoutRecyclerViewAdapter){
-            ((MultiLayoutRecyclerViewAdapter)getAdapter()).hideLoadMore();
+        else if(getAdapter() instanceof MultiLayoutAdapter){
+            ((MultiLayoutAdapter)getAdapter()).hideLoadMore();
         }
     }
 

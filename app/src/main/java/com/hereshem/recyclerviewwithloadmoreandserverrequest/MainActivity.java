@@ -6,8 +6,8 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.hereshem.lib.recycler.MultiLayoutRecyclerViewAdapter;
-import com.hereshem.lib.recycler.MultiLayoutRecyclerViewAdapter.TypeHolderLayout;
+import com.hereshem.lib.recycler.MultiLayoutAdapter;
+import com.hereshem.lib.recycler.MultiLayoutAdapter.TypeHolderLayout;
 import com.hereshem.lib.recycler.MyRecyclerView;
 import com.hereshem.lib.recycler.MyViewHolder;
 import com.hereshem.lib.recycler.RecyclerViewAdapter;
@@ -84,10 +84,10 @@ public class MainActivity extends AppCompatActivity {
 
         RecyclerViewAdapter adapter1 = new RecyclerViewAdapter(this, items, VHolder.class, R.layout.row_contact);
 
-        holders.add(new TypeHolderLayout(VHolder.class, Events.class, R.layout.row_contact));
-        holders.add(new TypeHolderLayout(TVHolder.class, String.class, R.layout.row_simple));
+        holders.add(new TypeHolderLayout(Events.class, VHolder.class, R.layout.row_contact));
+        holders.add(new TypeHolderLayout(String.class, TVHolder.class, R.layout.row_simple));
 
-        MultiLayoutRecyclerViewAdapter adapter2 = new MultiLayoutRecyclerViewAdapter(this, items, holders);
+        MultiLayoutAdapter adapter2 = new MultiLayoutAdapter(this, items, holders);
 
         recycler = findViewById(R.id.recycler);
         recycler.setAdapter(adapter2);

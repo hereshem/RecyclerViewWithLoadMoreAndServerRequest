@@ -15,7 +15,7 @@ import java.util.List;
  * Created by hereshem on 2/18/18.
  */
 
-public class MultiLayoutRecyclerViewAdapter extends RecyclerView.Adapter<MyViewHolder> {
+public class MultiLayoutAdapter extends RecyclerView.Adapter<MyViewHolder> {
     Activity activity;
     List<Object> items;
     boolean loadMore = false;
@@ -25,14 +25,14 @@ public class MultiLayoutRecyclerViewAdapter extends RecyclerView.Adapter<MyViewH
     public static class TypeHolderLayout {
         public Class viewHolder, dataType;
         public int layout;
-        public TypeHolderLayout(Class viewHolder, Class dataType, int layout) {
+        public TypeHolderLayout(Class dataType, Class viewHolder, int layout) {
             this.viewHolder = viewHolder;
             this.dataType = dataType;
             this.layout = layout;
         }
     }
 
-    public MultiLayoutRecyclerViewAdapter(Activity activity, List<Object> items, List<TypeHolderLayout> typeHolderLayouts){
+    public MultiLayoutAdapter(Activity activity, List<Object> items, List<TypeHolderLayout> typeHolderLayouts){
         this.activity = activity;
         this.items = items;
         this.typeHolderLayouts = typeHolderLayouts;
