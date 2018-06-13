@@ -5,7 +5,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.hereshem.lib.R;
+
 import java.lang.reflect.Constructor;
 import java.util.List;
 
@@ -13,27 +15,35 @@ import java.util.List;
  * Created by hereshem on 2/18/18.
  */
 
-public class RecyclerViewAdapter<LI, VH> extends RecyclerView.Adapter<MyViewHolder> {
+public class MultiLayoutRecyclerViewAdapter extends RecyclerView.Adapter<MyViewHolder> {
     Activity activity;
-    List<LI> items;
-    int layout;
+    List<Object> items;
     boolean loadMore = false;
-    Class<VH> holderClass;
+    List<TypeHolderLayout> typeHolderLayouts;
     MyRecyclerView.OnItemClickListener lis;
 
-    public RecyclerViewAdapter(Activity activity, List<LI> items, Class<VH> holderClass, int layout){
+    public static class TypeHolderLayout {
+        public Class viewHolder, dataType;
+        public int layout;
+        public TypeHolderLayout(Class viewHolder, Class dataType, int layout) {
+            this.viewHolder = viewHolder;
+            this.dataType = dataType;
+            this.layout = layout;
+        }
+    }
+
+    public MultiLayoutRecyclerViewAdapter(Activity activity, List<Object> items, List<TypeHolderLayout> typeHolderLayouts){
         this.activity = activity;
         this.items = items;
-        this.layout = layout;
-        this.holderClass = holderClass;
+        this.typeHolderLayouts = typeHolderLayouts;
     }
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if(viewType == 1) {
+        if(viewType != -1) {
             try {
-                Constructor constructor = holderClass.getConstructor(View.class);
-                return (MyViewHolder) constructor.newInstance(LayoutInflater.from(activity).inflate(layout, parent, false));
+                Constructor constructor = typeHolderLayouts.get(viewType).viewHolder.getConstructor(View.class);
+                return (MyViewHolder) constructor.newInstance(LayoutInflater.from(activity).inflate(typeHolderLayouts.get(viewType).layout, parent, false));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -63,8 +73,14 @@ public class RecyclerViewAdapter<LI, VH> extends RecyclerView.Adapter<MyViewHold
     @Override
     public int getItemViewType(int position) {
         if (loadMore && items.size() == position && position!=0)
-            return 0;
-        else return 1;
+            return -1;
+        else {
+            for (int i = 0; i < typeHolderLayouts.size(); i++) {
+                if(typeHolderLayouts.get(i).dataType == items.get(position).getClass())
+                    return i;
+            }
+        }
+        return -1;
     }
 
     private static class LoadMoreViewHolder extends MyViewHolder{
@@ -72,8 +88,7 @@ public class RecyclerViewAdapter<LI, VH> extends RecyclerView.Adapter<MyViewHold
             super(itemView);
         }
         @Override
-        public void bindView(Object item) {
-        }
+        public void bindView(Object item) {}
     }
 
     public void enableLoadMore(){

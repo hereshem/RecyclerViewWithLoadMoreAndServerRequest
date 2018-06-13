@@ -2,12 +2,14 @@ package com.hereshem.recyclerviewwithloadmoreandserverrequest;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.hereshem.lib.recycler.MultiLayoutRecyclerViewAdapter;
+import com.hereshem.lib.recycler.MultiLayoutRecyclerViewAdapter.TypeHolderLayout;
 import com.hereshem.lib.recycler.MyRecyclerView;
+import com.hereshem.lib.recycler.MyViewHolder;
 import com.hereshem.lib.recycler.RecyclerViewAdapter;
 import com.hereshem.lib.server.MyDataQuery;
 import com.hereshem.lib.utils.Preferences;
@@ -20,9 +22,10 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    MyRecyclerView recycler;
-    List<Events> items = new ArrayList<>();
     int start = 0;
+    MyRecyclerView recycler;
+    List<Object> items = new ArrayList<>();
+    List<TypeHolderLayout> holders = new ArrayList<>();
 
     public static class Events {
         public String date, title, summary;
@@ -46,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public static class VHolder extends RecyclerView.ViewHolder {
+    public static class VHolder extends MyViewHolder<Events> {
         TextView date, title, summary;
         public VHolder(View v) {
             super(v);
@@ -54,10 +57,23 @@ public class MainActivity extends AppCompatActivity {
             title = v.findViewById(R.id.title);
             summary = v.findViewById(R.id.summary);
         }
+
+        @Override
         public void bindView(Events c){
             date.setText(c.date);
             title.setText(c.title);
             summary.setText(c.summary);
+        }
+    }
+
+    public static class TVHolder extends MyViewHolder<String> {
+        TextView title;
+        public TVHolder(View v) {
+            super(v);
+            title = v.findViewById(R.id.title);
+        }
+        public void bindView(String c){
+            title.setText(c);
         }
     }
 
@@ -66,15 +82,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        RecyclerViewAdapter adapter = new RecyclerViewAdapter<Events, VHolder>(this, items, VHolder.class, R.layout.row_contact) {
-            @Override
-            public void onBinded(VHolder holder, int position) {
-                holder.bindView(items.get(position));
-            }
-        };
+        RecyclerViewAdapter adapter1 = new RecyclerViewAdapter(this, items, VHolder.class, R.layout.row_contact);
+
+        holders.add(new TypeHolderLayout(VHolder.class, Events.class, R.layout.row_contact));
+        holders.add(new TypeHolderLayout(TVHolder.class, String.class, R.layout.row_simple));
+
+        MultiLayoutRecyclerViewAdapter adapter2 = new MultiLayoutRecyclerViewAdapter(this, items, holders);
 
         recycler = findViewById(R.id.recycler);
-        recycler.setAdapter(adapter);
+        recycler.setAdapter(adapter2);
         recycler.setOnItemClickListener(new MyRecyclerView.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
@@ -91,10 +107,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadData() {
-        HashMap<String, String> maps = new HashMap<>();
-        maps.put("action", "get_day");
-        maps.put("start", start+"");
-        new MyDataQuery(this, maps) {
+        new MyDataQuery(this) {
             @Override
             public void onSuccess(String table_name, String result) {
                 List<Events> data = Events.parseJSON(result);
@@ -102,7 +115,13 @@ public class MainActivity extends AppCompatActivity {
                     items.clear();
                 }
                 if (data.size() > 0) {
-                    items.addAll(data);
+                    for (int i = 0; i < data.size(); i++) {
+                        if(i%5 == 4){
+                            items.add((i+1)+"th Item");
+                        }
+                        items.add(data.get(i));
+                    }
+                    //items.addAll(data);
                     recycler.loadComplete();
                     start += data.size();
                 } else {
