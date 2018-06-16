@@ -19,31 +19,23 @@ public class MultiLayoutAdapter extends RecyclerView.Adapter<MyViewHolder> {
     Activity activity;
     List<Object> items;
     boolean loadMore = false;
-    List<TypeHolderLayout> typeHolderLayouts;
+    List<MultiLayoutHolder> holders;
     MyRecyclerView.OnItemClickListener lis;
 
-    public static class TypeHolderLayout {
-        public Class viewHolder, dataType;
-        public int layout;
-        public TypeHolderLayout(Class dataType, Class viewHolder, int layout) {
-            this.viewHolder = viewHolder;
-            this.dataType = dataType;
-            this.layout = layout;
-        }
-    }
 
-    public MultiLayoutAdapter(Activity activity, List<Object> items, List<TypeHolderLayout> typeHolderLayouts){
+    public MultiLayoutAdapter(Activity activity, List<Object> items, List<MultiLayoutHolder> holders){
         this.activity = activity;
         this.items = items;
-        this.typeHolderLayouts = typeHolderLayouts;
+        this.holders = holders;
     }
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if(viewType != -1) {
             try {
-                Constructor constructor = typeHolderLayouts.get(viewType).viewHolder.getConstructor(View.class);
-                return (MyViewHolder) constructor.newInstance(LayoutInflater.from(activity).inflate(typeHolderLayouts.get(viewType).layout, parent, false));
+                Constructor constructor = holders.get(viewType).getViewHolder().getConstructor(View.class);
+                return (MyViewHolder) constructor.newInstance(LayoutInflater.from(activity)
+                        .inflate(holders.get(viewType).getLayout(), parent, false));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -75,9 +67,11 @@ public class MultiLayoutAdapter extends RecyclerView.Adapter<MyViewHolder> {
         if (loadMore && items.size() == position && position!=0)
             return -1;
         else {
-            for (int i = 0; i < typeHolderLayouts.size(); i++) {
-                if(typeHolderLayouts.get(i).dataType == items.get(position).getClass())
-                    return i;
+            for (int i = 0; i < holders.size(); i++) {
+                try {
+                    if (holders.get(i).getDataType() == items.get(position).getClass())
+                        return i;
+                }catch (Exception e){e.printStackTrace();}
             }
         }
         return -1;

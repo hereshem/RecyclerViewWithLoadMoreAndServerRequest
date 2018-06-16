@@ -1,16 +1,15 @@
 package com.hereshem.recyclerviewwithloadmoreandserverrequest;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.hereshem.lib.recycler.MultiLayoutAdapter;
-import com.hereshem.lib.recycler.MultiLayoutAdapter.TypeHolderLayout;
+import com.hereshem.lib.recycler.MultiLayoutHolder;
 import com.hereshem.lib.recycler.MyRecyclerView;
 import com.hereshem.lib.recycler.MyViewHolder;
-import com.hereshem.lib.recycler.RecyclerViewAdapter;
 import com.hereshem.lib.server.Config;
 import com.hereshem.lib.server.MapPair;
 import com.hereshem.lib.server.Method;
@@ -19,6 +18,7 @@ import com.hereshem.lib.utils.Preferences;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
     int start = 0;
     MyRecyclerView recycler;
     List<Object> items = new ArrayList<>();
-    List<TypeHolderLayout> holders = new ArrayList<>();
+    List<MultiLayoutHolder> holders = new ArrayList<>();
 
     public static class Events {
         public String date, title, summary;
@@ -84,10 +84,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        RecyclerViewAdapter adapter1 = new RecyclerViewAdapter(this, items, VHolder.class, R.layout.row_contact);
+        //RecyclerViewAdapter adapter1 = new RecyclerViewAdapter(this, items, VHolder.class, R.layout.row_contact);
 
-        holders.add(new TypeHolderLayout(Events.class, VHolder.class, R.layout.row_contact));
-        holders.add(new TypeHolderLayout(String.class, TVHolder.class, R.layout.row_simple));
+        holders.add(new MultiLayoutHolder(Events.class, VHolder.class, R.layout.row_contact));
+        holders.add(new MultiLayoutHolder(String.class, TVHolder.class, R.layout.row_simple));
 
         MultiLayoutAdapter adapter2 = new MultiLayoutAdapter(this, items, holders);
 
