@@ -11,13 +11,15 @@ import com.hereshem.lib.recycler.MultiLayoutAdapter.TypeHolderLayout;
 import com.hereshem.lib.recycler.MyRecyclerView;
 import com.hereshem.lib.recycler.MyViewHolder;
 import com.hereshem.lib.recycler.RecyclerViewAdapter;
+import com.hereshem.lib.server.Config;
+import com.hereshem.lib.server.MapPair;
+import com.hereshem.lib.server.Method;
 import com.hereshem.lib.server.MyDataQuery;
 import com.hereshem.lib.utils.Preferences;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -107,7 +109,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadData() {
-        new MyDataQuery(this) {
+        Config config = new Config(this)
+                .setUrl("http://dl.mantraideas.com/apis/events.json")
+                .setMethod(Method.GET);
+
+        new MyDataQuery(config) {
             @Override
             public void onSuccess(String table_name, String result) {
                 List<Events> data = Events.parseJSON(result);
@@ -130,22 +136,20 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public String onDbQuery(String table, HashMap<String, String> params) {
+            public String onDataQuery(String table, MapPair params) {
                 if(table.equals("0")){
                     return new Preferences(getApplicationContext()).getPreferences("data_downloaded");
                 }
-                return super.onDbQuery(table, params);
+                return super.onDataQuery(table, params);
             }
 
             @Override
-            public void onDbSave(String table, String response) {
+            public void onDataSave(String table, String response) {
                 if(table.equals("0")){
                     new Preferences(getApplicationContext()).setPreferences("data_downloaded", response);
                 }
             }
         }
-        .setUrl("http://dl.mantraideas.com/apis/events.json")
-        .setMethod(MyDataQuery.Method.GET)
         .setIdentifier(start+"")
         .execute();
     }

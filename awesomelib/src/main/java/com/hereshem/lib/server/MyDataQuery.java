@@ -1,5 +1,6 @@
 package com.hereshem.lib.server;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -20,38 +21,48 @@ import java.util.Map;
  */
 public abstract class MyDataQuery {
 
-    public enum Method {GET, POST, PUT, DELETE}
-
-    Context context;
-    Method method = Method.POST;
-    HashMap<String, String> params, headers;
-    String url = "https://hereshem.github.io";
-    String identifier = "tables";
-    boolean debug = true;
-    int code = 0;
+    private Context context;
+    private Method method = Method.GET;
+    private MapPair params, headers;
+    private String url = "https://hereshem.github.io";
+    private String identifier = "tables";
+    private boolean debug = true;
+    private int code = 0;
 
     public abstract void onSuccess(String identifier, String result);
     public void onError(String identifier, int code, String message){}
     public void onSoftError(String identifier, String message){}
-    public String onDbQuery(String identifier, HashMap<String, String> params){return "[]";}
-    public void onDbSave(String identifier, String response){}
+    public String onDataQuery(String identifier, MapPair params){return "[]";}
+    public void onDataSave(String identifier, String response){}
 
+    public MyDataQuery(Config config){
+        this.context    = config.context;
+        this.url        = config.url;
+        this.method     = config.method;
+        this.headers    = config.headers;
+        this.debug      = config.debug;
+    }
 
-    public MyDataQuery (Context context){
+    public MyDataQuery(Context context){
         this.context = context;
     }
 
-    public MyDataQuery (Context context, HashMap<String, String> params){
-        this.context = context;
+    public MyDataQuery(Config config, MapPair params){
+        this(config);
         this.params = params;
     }
 
-    public MyDataQuery setParameters(HashMap<String, String> params){
+    public MyDataQuery (Context context, MapPair params){
+        this(context);
+        this.params = params;
+    }
+
+    public MyDataQuery setParameters(MapPair params){
         this.params = params;
         return this;
     }
 
-    public MyDataQuery setHeaders(HashMap<String, String> headers){
+    public MyDataQuery setHeaders(MapPair headers){
         this.headers = headers;
         return this;
     }
@@ -76,8 +87,9 @@ public abstract class MyDataQuery {
         return this;
     }
 
-    public MyDataQuery execute(){
-        String res = onDbQuery(identifier, params);
+    @SuppressLint("StaticFieldLeak")
+    public void execute(){
+        String res = onDataQuery(identifier, params);
         if(res != null && res.length() > 2) {
             log("From query :: " + res);
             onSuccess(identifier, res);
@@ -90,7 +102,6 @@ public abstract class MyDataQuery {
                 log("Error :: no connection");
                 onError(identifier, 450, "No internet connection");
             }
-            return this;
         }
         new AsyncTask<Void, Void, String>(){
             @Override
@@ -101,7 +112,7 @@ public abstract class MyDataQuery {
                     URL u = new URL(url);
                     HttpURLConnection conn = (HttpURLConnection)u.openConnection();
                     conn.setRequestMethod(method.name());
-                    if(method.equals(Method.POST)) {
+                    if(method == Method.POST) {
                         conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
                     }
                     log("Debug :: Method = " + method.name() +" Url = " + url);
@@ -109,7 +120,7 @@ public abstract class MyDataQuery {
                     conn.setDoOutput(true);
                     conn.setDoInput(true);
                     OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream());
-                    writer.write(getUrlEncodeData(params));
+                    writer.write(getUrlEncodeData(params.getMap()));
                     writer.flush();
                     writer.close();
                     InputStream inputStream;
@@ -136,13 +147,12 @@ public abstract class MyDataQuery {
             @Override
             protected void onPostExecute(String result) {
                 super.onPostExecute(result);
-                if(code == 200){
-                    onDbSave(identifier, result);
+                if(code == HttpURLConnection.HTTP_OK){
+                    onDataSave(identifier, result);
                 }
                 sendResponse(identifier, result);
             }
         }.execute();
-        return this;
     }
 
     private void log(String text){
@@ -151,8 +161,8 @@ public abstract class MyDataQuery {
     }
 
     private void addHeaders(HttpURLConnection conn) {
-        if(headers != null && !headers.isEmpty()){
-            for (String key : headers.keySet()) {
+        if(headers != null && !headers.getMap().isEmpty()){
+            for (String key : headers.getMap().keySet()) {
                 conn.setRequestProperty(key, headers.get(key));
             }
             log("Headers = " + headers.toString());
@@ -160,7 +170,7 @@ public abstract class MyDataQuery {
     }
 
     private void sendResponse(String identifier, String result) {
-        if(code == 200) {
+        if(code == HttpURLConnection.HTTP_OK) {
             log("Success :: " + result);
             onSuccess(identifier, result);
         }
@@ -196,20 +206,6 @@ public abstract class MyDataQuery {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo ni = cm.getActiveNetworkInfo();
         return ni!=null;
-    }
-
-    public static HashMap<String, String> getRequestParameters(String action) {
-        HashMap<String, String> params = new HashMap();
-        params.put("action", action);
-        return params;
-    }
-
-    public static HashMap<String, String> getRequestParameters(String action, int skip) {
-        HashMap<String, String> params = new HashMap();
-        params.put("action", action);
-        params.put("start", skip + "");
-        params.put("limit", "20");
-        return params;
     }
 
     public static String getSha1Hex(String string){
