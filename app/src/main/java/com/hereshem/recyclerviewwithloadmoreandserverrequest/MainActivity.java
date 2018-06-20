@@ -136,11 +136,11 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public String onDataQuery(String table, MapPair params) {
-                if(table.equals("0")){
+            public String onDataQuery(String identifier) {
+                if(identifier.equals("0")){
                     return new Preferences(getApplicationContext()).getPreferences("data_downloaded");
                 }
-                return super.onDataQuery(table, params);
+                return super.onDataQuery(identifier);
             }
 
             @Override

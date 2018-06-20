@@ -32,7 +32,7 @@ public abstract class MyDataQuery {
     public abstract void onSuccess(String identifier, String result);
     public void onError(String identifier, int code, String message){}
     public void onSoftError(String identifier, String message){}
-    public String onDataQuery(String identifier, MapPair params){return "[]";}
+    public String onDataQuery(String identifier){return "[]";}
     public void onDataSave(String identifier, String response){}
 
     public MyDataQuery(Config config){
@@ -89,7 +89,7 @@ public abstract class MyDataQuery {
 
     @SuppressLint("StaticFieldLeak")
     public void execute(){
-        String res = onDataQuery(identifier, params);
+        String res = onDataQuery(identifier);
         if(res != null && res.length() > 2) {
             log("From query :: " + res);
             onSuccess(identifier, res);
@@ -120,7 +120,7 @@ public abstract class MyDataQuery {
                     conn.setDoOutput(true);
                     conn.setDoInput(true);
                     OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream());
-                    writer.write(getUrlEncodeData(params.getMap()));
+                    writer.write(getUrlEncodeData(params));
                     writer.flush();
                     writer.close();
                     InputStream inputStream;
@@ -180,13 +180,12 @@ public abstract class MyDataQuery {
         }
     }
 
-    private String getUrlEncodeData(HashMap<String, String> params) {
-        if(params == null){
+    private String getUrlEncodeData(MapPair params) {
+        if (params == null || params.getMap() == null || params.getMap().isEmpty())
             return "";
-        }
         StringBuilder result = new StringBuilder();
         boolean first = true;
-        for(Map.Entry<String, String> entry : params.entrySet()){
+        for(Map.Entry<String, String> entry : params.getMap().entrySet()){
             try {
                 if (first)
                     first = false;

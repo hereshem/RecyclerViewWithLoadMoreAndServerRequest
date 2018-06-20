@@ -2,8 +2,6 @@ package com.hereshem.lib.server;
 
 import android.content.Context;
 
-import java.util.HashMap;
-
 public class Config {
     Context context;
     String url = "http://www.hemshrestha.com.np";

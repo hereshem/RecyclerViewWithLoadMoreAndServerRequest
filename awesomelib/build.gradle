@@ -12,7 +12,7 @@ ext {
     siteUrl = 'https://github.com/hereshem/RecyclerViewWithLoadMoreAndServerRequest'
     gitUrl = 'https://github.com/hereshem/RecyclerViewWithLoadMoreAndServerRequest.git'
 
-    libraryVersion = '2.1.0'
+    libraryVersion = '2.1.1'
 
     developerId = 'hereshem'
     developerName = 'Hem Shrestha'
@@ -28,8 +28,8 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 26
-        versionCode 6
-        versionName "2.1.0"
+        versionCode 7
+        versionName "2.1.1"
     }
     buildTypes {
         release {
