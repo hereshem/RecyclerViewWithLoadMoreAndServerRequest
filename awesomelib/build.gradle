@@ -12,7 +12,7 @@ ext {
     siteUrl = 'https://github.com/hereshem/RecyclerViewWithLoadMoreAndServerRequest'
     gitUrl = 'https://github.com/hereshem/RecyclerViewWithLoadMoreAndServerRequest.git'
 
-    libraryVersion = '2.1.1'
+    libraryVersion = '2.1.2'
 
     developerId = 'hereshem'
     developerName = 'Hem Shrestha'
@@ -24,12 +24,12 @@ ext {
 }
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 27
     defaultConfig {
         minSdkVersion 15
-        targetSdkVersion 26
-        versionCode 7
-        versionName "2.1.1"
+        targetSdkVersion 27
+        versionCode 8
+        versionName "2.1.2"
     }
     buildTypes {
         release {
@@ -40,7 +40,7 @@ android {
 }
 
 dependencies {
-    implementation 'com.android.support:recyclerview-v7:26.1.0'
+    implementation 'com.android.support:recyclerview-v7:27.1.1'
 }
 
 apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'

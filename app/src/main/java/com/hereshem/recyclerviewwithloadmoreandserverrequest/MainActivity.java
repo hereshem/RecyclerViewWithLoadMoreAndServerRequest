@@ -3,6 +3,8 @@ package com.hereshem.recyclerviewwithloadmoreandserverrequest;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -78,10 +80,15 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     public static class DVHolder extends MyViewHolder<Integer> {
+        View view;
         public DVHolder(View v) {
             super(v);
+            view = v;
         }
         public void bindView(Integer c){
+            ViewGroup.LayoutParams p = view.getLayoutParams();
+            p.height = c;
+            view.setLayoutParams(p);
         }
     }
 
@@ -94,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
 
         holder = new MultiLayoutHolder()
                 .add(Events.class, VHolder.class, R.layout.row_contact)
-                .add(Integer.class, DVHolder.class, android.R.layout.simple_list_item_1)
+                .add(Integer.class, DVHolder.class, R.layout.row_divider)
                 .add(String.class, TVHolder.class, R.layout.row_simple);
 
         MultiLayoutAdapter adapter2 = new MultiLayoutAdapter(this, items, holder);
@@ -136,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
                             items.add("For month of " + last);
                         }
                         else {
-                            items.add(new Integer(1));
+                            items.add(i);
                         }
                         items.add(data.get(i));
                     }

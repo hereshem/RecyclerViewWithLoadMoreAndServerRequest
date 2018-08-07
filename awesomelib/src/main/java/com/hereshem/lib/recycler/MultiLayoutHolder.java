@@ -26,16 +26,16 @@ public class MultiLayoutHolder {
         try {
             viewHolder.getMethod("bindView", dataType);
             if(MyViewHolder.class.isAssignableFrom(viewHolder))
-                maps.put(dataType, new Holder(dataType, viewHolder, layout, maps.size()));
+                if(maps.containsKey(dataType))
+                    throw new RuntimeException("Duplicate dataType \"" + dataType.getSimpleName() + "\",\nThe dataType must be unique in order to show the correct layout");
+                else
+                    maps.put(dataType, new Holder(dataType, viewHolder, layout, maps.size()));
             else
-                throw new RuntimeException(
-                        viewHolder.getSimpleName() + " must inherit MyViewHolder<"+dataType.getSimpleName()+"> class." +
-                                "\n public static class " + viewHolder.getSimpleName() + " extends MyViewHolder<"+dataType.getSimpleName()+">{...}"
-                );
-        }catch (Exception e){
+                throw new NoSuchMethodException();
+        }catch (NoSuchMethodException e){
             throw new RuntimeException(
                     viewHolder.getSimpleName() + " must inherit MyViewHolder<"+dataType.getSimpleName()+"> class." +
-                            "\n public static class " + viewHolder.getSimpleName() + " extends MyViewHolder<"+dataType.getSimpleName()+">{...}"
+                            "\nexample - public static class " + viewHolder.getSimpleName() + " extends MyViewHolder<"+dataType.getSimpleName()+">{\n...\n}"
             );
         }
         return this;
@@ -50,7 +50,10 @@ public class MultiLayoutHolder {
     }
 
     public int getIndexFromType(Class dataType) {
-        return maps.get(dataType).index;
+        if(maps.containsKey(dataType))
+            return maps.get(dataType).index;
+        else
+            return -2;
     }
 
 }

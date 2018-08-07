@@ -2,6 +2,7 @@ package com.hereshem.lib.recycler;
 
 import android.app.Activity;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,16 +35,21 @@ public class MultiLayoutAdapter extends RecyclerView.Adapter<MyViewHolder> {
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if(viewType != -1) {
-            try {
-                Constructor constructor = holder.getViewHolderFromIndex(viewType).getConstructor(View.class);
-                return (MyViewHolder) constructor.newInstance(LayoutInflater.from(activity)
-                        .inflate(holder.getLayoutFromIndex(viewType), parent, false));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        if(viewType == -1){
+            return new LoadMoreViewHolder(LayoutInflater.from(activity).inflate(R.layout.more_loading, parent, false));
         }
-        return new LoadMoreViewHolder(LayoutInflater.from(activity).inflate(R.layout.more_loading, parent, false));
+        else if (viewType == -2){
+            return new NoViewHolder(new View(activity));
+        }
+        try {
+            Constructor constructor = holder.getViewHolderFromIndex(viewType).getConstructor(View.class);
+            return (MyViewHolder) constructor.newInstance(LayoutInflater.from(activity)
+                    .inflate(holder.getLayoutFromIndex(viewType), parent, false));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new NoViewHolder(new View(activity));
+
     }
 
     @Override
@@ -70,12 +76,24 @@ public class MultiLayoutAdapter extends RecyclerView.Adapter<MyViewHolder> {
         if (loadMore && items.size() == position && position!=0)
             return -1;
         else {
-            return holder.getIndexFromType(items.get(position).getClass());
+            int val = holder.getIndexFromType(items.get(position).getClass());
+            if (val == -2){
+                Log.e("MultiLayoutAdapter", "Invalid Data Type \""+items.get(position).getClass().getSimpleName()+"\" in index " + position);
+            }
+            return val;
         }
     }
 
     private static class LoadMoreViewHolder extends MyViewHolder{
         private LoadMoreViewHolder(View itemView) {
+            super(itemView);
+        }
+        @Override
+        public void bindView(Object item) {}
+    }
+
+    private static class NoViewHolder extends MyViewHolder{
+        private NoViewHolder(View itemView) {
             super(itemView);
         }
         @Override
