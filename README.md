@@ -5,7 +5,7 @@
 Add this line in app level ```build.gradle``` inside dependencies section in Android Studio.
 
 ```
-implementation 'com.hereshem.lib:awesomelib:2.1.1'
+implementation 'com.hereshem.lib:awesomelib:2.1.2'
 ```
 ## Steps
 
