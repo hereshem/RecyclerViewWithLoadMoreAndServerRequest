@@ -19,23 +19,26 @@ public class MultiLayoutAdapter extends RecyclerView.Adapter<MyViewHolder> {
     Activity activity;
     List<Object> items;
     boolean loadMore = false;
-    List<MultiLayoutHolder> holders;
+    MultiLayoutHolder holder;
     MyRecyclerView.OnItemClickListener lis;
 
 
-    public MultiLayoutAdapter(Activity activity, List<Object> items, List<MultiLayoutHolder> holders){
+    public MultiLayoutAdapter(Activity activity, List<Object> items, MultiLayoutHolder holder){
         this.activity = activity;
         this.items = items;
-        this.holders = holders;
+        this.holder = holder;
+    }
+    public static MultiLayoutAdapter init(Activity activity, List<Object> items, MultiLayoutHolder holder){
+        return new MultiLayoutAdapter(activity, items, holder);
     }
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if(viewType != -1) {
             try {
-                Constructor constructor = holders.get(viewType).getViewHolder().getConstructor(View.class);
+                Constructor constructor = holder.getViewHolderFromIndex(viewType).getConstructor(View.class);
                 return (MyViewHolder) constructor.newInstance(LayoutInflater.from(activity)
-                        .inflate(holders.get(viewType).getLayout(), parent, false));
+                        .inflate(holder.getLayoutFromIndex(viewType), parent, false));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -67,14 +70,8 @@ public class MultiLayoutAdapter extends RecyclerView.Adapter<MyViewHolder> {
         if (loadMore && items.size() == position && position!=0)
             return -1;
         else {
-            for (int i = 0; i < holders.size(); i++) {
-                try {
-                    if (holders.get(i).getDataType() == items.get(position).getClass())
-                        return i;
-                }catch (Exception e){e.printStackTrace();}
-            }
+            return holder.getIndexFromType(items.get(position).getClass());
         }
-        return -1;
     }
 
     private static class LoadMoreViewHolder extends MyViewHolder{

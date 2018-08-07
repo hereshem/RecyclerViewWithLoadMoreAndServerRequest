@@ -12,8 +12,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.security.MessageDigest;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -102,6 +102,7 @@ public abstract class MyDataQuery {
                 log("Error :: no connection");
                 onError(identifier, 450, "No internet connection");
             }
+            return;
         }
         new AsyncTask<Void, Void, String>(){
             @Override
@@ -112,7 +113,7 @@ public abstract class MyDataQuery {
                     URL u = new URL(url);
                     HttpURLConnection conn = (HttpURLConnection)u.openConnection();
                     conn.setRequestMethod(method.name());
-                    if(method == Method.POST) {
+                    if(method == Method.POST || method == Method.PUT) {
                         conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
                     }
                     log("Debug :: Method = " + method.name() +" Url = " + url);
@@ -193,7 +194,7 @@ public abstract class MyDataQuery {
                     result.append("&");
                 result.append(entry.getKey());
                 result.append("=");
-                result.append(entry.getValue());
+                result.append(URLEncoder.encode(entry.getValue(), "utf-8"));
             }
             catch(Exception e){e.printStackTrace();}
         }

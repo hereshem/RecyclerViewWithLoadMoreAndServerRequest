@@ -11,7 +11,6 @@ import com.hereshem.lib.recycler.MultiLayoutHolder;
 import com.hereshem.lib.recycler.MyRecyclerView;
 import com.hereshem.lib.recycler.MyViewHolder;
 import com.hereshem.lib.server.Config;
-import com.hereshem.lib.server.MapPair;
 import com.hereshem.lib.server.Method;
 import com.hereshem.lib.server.MyDataQuery;
 import com.hereshem.lib.utils.Preferences;
@@ -27,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     int start = 0;
     MyRecyclerView recycler;
     List<Object> items = new ArrayList<>();
-    List<MultiLayoutHolder> holders = new ArrayList<>();
+    MultiLayoutHolder holder;
 
     public static class Events {
         public String date, title, summary;
@@ -78,6 +77,13 @@ public class MainActivity extends AppCompatActivity {
             title.setText(c);
         }
     }
+    public static class DVHolder extends MyViewHolder<Integer> {
+        public DVHolder(View v) {
+            super(v);
+        }
+        public void bindView(Integer c){
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,10 +92,12 @@ public class MainActivity extends AppCompatActivity {
 
         //RecyclerViewAdapter adapter1 = new RecyclerViewAdapter(this, items, VHolder.class, R.layout.row_contact);
 
-        holders.add(new MultiLayoutHolder(Events.class, VHolder.class, R.layout.row_contact));
-        holders.add(new MultiLayoutHolder(String.class, TVHolder.class, R.layout.row_simple));
+        holder = new MultiLayoutHolder()
+                .add(Events.class, VHolder.class, R.layout.row_contact)
+                .add(Integer.class, DVHolder.class, android.R.layout.simple_list_item_1)
+                .add(String.class, TVHolder.class, R.layout.row_simple);
 
-        MultiLayoutAdapter adapter2 = new MultiLayoutAdapter(this, items, holders);
+        MultiLayoutAdapter adapter2 = new MultiLayoutAdapter(this, items, holder);
 
         recycler = findViewById(R.id.recycler);
         recycler.setAdapter(adapter2);
@@ -121,13 +129,17 @@ public class MainActivity extends AppCompatActivity {
                     items.clear();
                 }
                 if (data.size() > 0) {
+                    String last="";
                     for (int i = 0; i < data.size(); i++) {
-                        if(i%5 == 4){
-                            items.add((i+1)+"th Item");
+                        if (!last.equals(data.get(i).date.substring(5,7))) {
+                            last = data.get(i).date.substring(5,7);
+                            items.add("For month of " + last);
+                        }
+                        else {
+                            items.add(new Integer(1));
                         }
                         items.add(data.get(i));
                     }
-                    //items.addAll(data);
                     recycler.loadComplete();
                     start += data.size();
                 } else {

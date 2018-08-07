@@ -13,6 +13,10 @@ public class Config {
         this.context = context;
     }
 
+    public static Config init(Context context){
+        return new Config(context);
+    }
+
     public Config setHeaders(MapPair headers){
         this.headers = headers;
         return this;

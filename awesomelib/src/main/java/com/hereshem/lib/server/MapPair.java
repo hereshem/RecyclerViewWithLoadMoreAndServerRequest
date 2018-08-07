@@ -1,18 +1,19 @@
 package com.hereshem.lib.server;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class MapPair {
-    private HashMap<String, String> pair;
+    private LinkedHashMap<String, String> pair;
     public MapPair(){
-        pair = new HashMap<>();
+        pair = new LinkedHashMap<>();
     }
     public MapPair add(String key, String value){
         pair.put(key, value);
         return this;
     }
 
-    public HashMap<String, String> getMap() {
+    public LinkedHashMap<String, String> getMap() {
         return pair;
     }
 

@@ -26,6 +26,9 @@ public class RecyclerViewAdapter<LI, VH> extends RecyclerView.Adapter<MyViewHold
         this.items = items;
         this.layout = layout;
         this.holderClass = holderClass;
+        if(!MyViewHolder.class.isAssignableFrom(holderClass)){
+            throw new RuntimeException("holderClass must inherit MyViewHolder class");
+        }
     }
 
     @Override
