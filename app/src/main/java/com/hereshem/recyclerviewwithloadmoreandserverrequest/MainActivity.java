@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.hereshem.lib.recycler.MultiLayoutAdapter;
 import com.hereshem.lib.recycler.MultiLayoutHolder;
 import com.hereshem.lib.recycler.MyRecyclerView;
@@ -15,7 +14,6 @@ import com.hereshem.lib.server.Config;
 import com.hereshem.lib.server.Method;
 import com.hereshem.lib.server.MyDataQuery;
 import com.hereshem.lib.utils.Preferences;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -59,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
             title = v.findViewById(R.id.title);
             summary = v.findViewById(R.id.summary);
         }
-
         @Override
         public void bindView(Events c){
             date.setText(c.date);

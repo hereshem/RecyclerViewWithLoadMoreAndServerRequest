@@ -1,53 +1,28 @@
-# AwesomeLib
-*An awesome library for the Android to make simpler with RecyclerView, LoadMore Features, ServerRequests, and many more.*
+# RecyclerView Library with LoadMore
 
-You can add this library for making RecyclerView more Simpler using the following line in app level ```build.gradle``` file in Android Studio.
+*Super Simple RecyclerView with Infinite Scrolling LoadMore, ClickListener Features, Server Requests, and many more.*
 
-```
-implementation 'com.hereshem.lib:awesomelib:1.0.1'
-```
-And in the project level ```build.gradle``` add the following line
+Add this line in app level ```build.gradle``` inside dependencies section in Android Studio.
 
 ```
-repositories {
-    ...
-    maven {
-        url  "https://dl.bintray.com/hereshem/awesomelib"
-    }
-}
+implementation 'com.hereshem.lib:awesomelib:2.1.2'
 ```
 ## Steps
 
-**Create a Simple Class**
+**Create a layout file for RecyclerView**
 
 ```
-public static class Events {
-    public String date, title, summary;
-    public Events(JSONObject jObj){
-        date = jObj.optString("Date");
-        title = jObj.optString("Title");
-        summary = jObj.optString("Summary");
-    }
-    public static List<Events> parseJSON(JSONArray jArr){
-        List<Events> list = new ArrayList<>();
-        for (int i = 0; i < jArr.length(); i++) {
-            list.add(new Events(jArr.optJSONObject(i)));
-        }
-        return list;
-    }
-    public static List<Events> parseJSON(String jsonArrayString){
-        try{
-            return parseJSON(new JSONArray(jsonArrayString));
-        }catch (Exception e){e.printStackTrace();}
-        return new ArrayList<>();
-    }
-}
+<com.hereshem.lib.recycler.MyRecyclerView
+        android:id="@+id/recycler"
+        app:layoutManager="LinearLayoutManager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 ```
 
-**Create a View Holder**
+Create a View Holder that extends **MyViewHolder** providing a class type to bind together with
 
 ```
-public static class VHolder extends RecyclerView.ViewHolder {
+public static class VHolder extends MyViewHolder<Events> {
     TextView date, title, summary;
     public VHolder(View v) {
         super(v);
@@ -55,6 +30,7 @@ public static class VHolder extends RecyclerView.ViewHolder {
         title = v.findViewById(R.id.title);
         summary = v.findViewById(R.id.summary);
     }
+    @Override
     public void bindView(Events c){
         date.setText(c.date);
         title.setText(c.title);
@@ -63,15 +39,11 @@ public static class VHolder extends RecyclerView.ViewHolder {
 }
 ```
 
-**Initialize Adapter**
+**Initialize Adapter** by providing the data items, the holder it supports and the layout design
 
 ```
-RecyclerViewAdapter adapter = new RecyclerViewAdapter<Events, VHolder>(this, items, VHolder.class, R.layout.row_contact) {
-    @Override
-    public void onBinded(VHolder holder, int position) {
-        holder.bindView(items.get(position));
-    }
-};
+List<Events> items = new ArrayList<>();
+RecyclerViewAdapter adapter = new RecyclerViewAdapter(this, items, VHolder.class, R.layout.row_contact);
 MyRecyclerView recycler = findViewById(R.id.recycler);
 recycler.setAdapter(adapter);
 ```
@@ -94,6 +66,17 @@ recycler.setOnLoadMoreListener(new MyRecyclerView.OnLoadMoreListener() {
 });
 loadData();
 ```
+After the data is loaded, RecyclerView could be notified by
+
+```
+recycler.loadComplete();
+
+```
+When LoadMore is not required, loading can be set to hidden by calling
+
+```
+recycler.hideLoadMore();
+```
 
 **That's it**. 
 
@@ -105,16 +88,13 @@ Online Data request to server made more simpler using the following code.
 
 ```
 private void loadData() {
-    HashMap<String, String> maps = new HashMap<>();
-    maps.put("action", "get_event");
-    maps.put("start", start+"");
-    new MyDataQuery(this, maps) {
+    new MyDataQuery(this) {
         @Override
         public void onSuccess(String identifier, String result) {
-            List<Events> data = Events.parseJSON(result);
             if (identifier.equals("0")) {
                 items.clear();
             }
+            List<Events> data = Events.parseJSON(result);
             if (data.size() > 0) {
                 items.addAll(data);
                 recycler.loadComplete();
@@ -134,19 +114,19 @@ private void loadData() {
 **Further more** - Offline support can also be provided.
 
 ```
-new MyDataQuery(this, maps) {
+new MyDataQuery(this) {
 	...
 	...
     @Override
-    public String onDbQuery(String identifier, HashMap<String, String> params) {
+    public String onDataQuery(String identifier) {
         if(identifier.equals("0")){
             return new Preferences(getApplicationContext()).getPreferences("data_downloaded");
         }
-        return super.onDbQuery(identifier, params);
+        return super.onDataQuery(identifier);
     }
 
     @Override
-    public void onDbSave(String identifier, String response) {
+    public void onDataSave(String identifier, String response) {
         if(identifier.equals("0")){
             new Preferences(getApplicationContext()).setPreferences("data_downloaded", response);
         }
